@@ -1,6 +1,8 @@
 CC                    := gcc
 BIN                   := posix_demo
 
+DEFINES				:= -D projENABLE_TRACING=0
+
 BUILD_DIR             := ./build
 BUILD_DIR_ABS         := $(abspath $(BUILD_DIR))
 
@@ -18,12 +20,12 @@ INCLUDE_DIRS          += -I${KERNEL_DIR}/include
 INCLUDE_DIRS          += -I${KERNEL_DIR}/portable/ThirdParty/GCC/Posix
 INCLUDE_DIRS          += -I${KERNEL_DIR}/portable/ThirdParty/GCC/Posix/utils
 INCLUDE_DIRS          += -I${FREERTOS_DIR}/Demo/Common/include
-INCLUDE_DIRS          += -I${FREERTOS_PLUS_DIR}/Source/FreeRTOS-Plus-Trace/include
-INCLUDE_DIRS          += -I${FREERTOS_PLUS_DIR}/Source/FreeRTOS-Plus-Trace/config
-INCLUDE_DIRS          += -I${FREERTOS_PLUS_DIR}/Source/FreeRTOS-Plus-Trace/streamports/File/include
-INCLUDE_DIRS          += -I${FREERTOS_PLUS_DIR}/Source/FreeRTOS-Plus-Trace/streamports/File/config
-INCLUDE_DIRS          += -I${FREERTOS_PLUS_DIR}/Source/FreeRTOS-Plus-Trace/kernelports/FreeRTOS/include
-INCLUDE_DIRS          += -I${FREERTOS_PLUS_DIR}/Source/FreeRTOS-Plus-Trace/kernelports/FreeRTOS/
+#INCLUDE_DIRS          += -I${FREERTOS_PLUS_DIR}/Source/FreeRTOS-Plus-Trace/include
+#INCLUDE_DIRS          += -I${FREERTOS_PLUS_DIR}/Source/FreeRTOS-Plus-Trace/config
+#INCLUDE_DIRS          += -I${FREERTOS_PLUS_DIR}/Source/FreeRTOS-Plus-Trace/streamports/File/include
+#INCLUDE_DIRS          += -I${FREERTOS_PLUS_DIR}/Source/FreeRTOS-Plus-Trace/streamports/File/config
+#INCLUDE_DIRS          += -I${FREERTOS_PLUS_DIR}/Source/FreeRTOS-Plus-Trace/kernelports/FreeRTOS/include
+#INCLUDE_DIRS          += -I${FREERTOS_PLUS_DIR}/Source/FreeRTOS-Plus-Trace/kernelports/FreeRTOS/
 
 SOURCE_FILES          := $(wildcard *.c)
 SOURCE_FILES          += $(wildcard ${FREERTOS_DIR}/Source/*.c)
@@ -34,36 +36,67 @@ SOURCE_FILES          += ${KERNEL_DIR}/portable/ThirdParty/GCC/Posix/utils/wait_
 SOURCE_FILES          += ${KERNEL_DIR}/portable/ThirdParty/GCC/Posix/port.c
 
 # Demo library.
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/AbortDelay.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/BlockQ.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/blocktim.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/countsem.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/death.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/dynamic.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/EventGroupsDemo.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/flop.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/GenQTest.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/integer.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/IntSemTest.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/MessageBufferAMP.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/MessageBufferDemo.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/PollQ.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/QPeek.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/QueueOverwrite.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/QueueSet.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/QueueSetPolling.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/recmutex.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/semtest.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/StaticAllocation.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/StreamBufferDemo.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/StreamBufferInterrupt.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/TaskNotify.c
-SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/TimerDemo.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/AbortDelay.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/BlockQ.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/blocktim.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/countsem.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/death.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/dynamic.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/EventGroupsDemo.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/flop.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/GenQTest.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/integer.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/IntSemTest.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/MessageBufferAMP.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/MessageBufferDemo.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/PollQ.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/QPeek.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/QueueOverwrite.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/QueueSet.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/QueueSetPolling.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/recmutex.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/semtest.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/StaticAllocation.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/StreamBufferDemo.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/StreamBufferInterrupt.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/TaskNotify.c
+#SOURCE_FILES          += ${FREERTOS_DIR}/Demo/Common/Minimal/TimerDemo.c
 
+LV_DRIVER          := X11
+# simulator library define
+ifeq  "$(LV_DRIVER)" "SDL2"
+LV_DRIVER_USE       := USE_SDL
+else
+LV_DRIVER_USE       := USE_X11
+endif
+
+# Add simulator defines to allow modification of source
+DEFINES				+= -D SIMULATOR=1 -D LV_BUILD_TEST=0 -D $(LV_DRIVER_USE)
+
+INCLUDE_DIRS          += -Ilvgl
+INCLUDE_DIRS          += -Ilv_drivers
+INCLUDE_DIRS          += -Ilvgl/demos
+INCLUDE_DIRS          += -Ilvgl/src
+INCLUDE_DIRS          += -Ilvgl/src/misc
+
+SOURCE_FILES          += $(wildcard simulator/*.c)
+SOURCE_FILES          += $(wildcard lvgl/*.c)
+#SOURCE_FILES          += $(wildcard lvgl/src/*.c)
+#SOURCE_FILES          += $(wildcard lvgl/src/misc/*.c)
+#SOURCE_FILES          += $(wildcard lvgl/src/core/*.c)
+#SOURCE_FILES          += $(wildcard lvgl/src/font/*.c)
+#SOURCE_FILES          += $(wildcard lvgl/src/hal/*.c)
+#SOURCE_FILES          += $(wildcard lvgl/src/extra/*.c)
+SOURCE_FILES          += $(shell find lvgl/src -name '*.c')
+SOURCE_FILES          += $(shell find lvgl/demos/widgets -name '*.c')
+SOURCE_FILES          += $(shell find lvgl/demos/stress -name '*.c')
+SOURCE_FILES          += $(shell find lvgl/demos/benchmark -name '*.c')
+
+SOURCE_FILES          += $(shell find lv_drivers -name '*.c')
 
 
 CFLAGS                :=    -ggdb3
-LDFLAGS               :=    -ggdb3 -pthread
+LDFLAGS               :=    -ggdb3 -pthread -l$(LV_DRIVER)
 CPPFLAGS              :=    $(INCLUDE_DIRS) -DBUILD_DIR=\"$(BUILD_DIR_ABS)\"
 CPPFLAGS              +=    -D_WINDOWS_
 
@@ -78,14 +111,8 @@ ifeq ($(COVERAGE_TEST),1)
   CPPFLAGS              += -DprojENABLE_TRACING=0
   CFLAGS                += -Werror
 else
-  ifeq ($(NO_TRACING),1)
-    CPPFLAGS              += -DprojENABLE_TRACING=0
-  else
-    CPPFLAGS              += -DprojENABLE_TRACING=1
-    # Trace Library.
-    SOURCE_FILES          += ${FREERTOS_PLUS_DIR}/Source/FreeRTOS-Plus-Trace/kernelports/FreeRTOS/trcKernelPort.c
-    SOURCE_FILES          += $(wildcard ${FREERTOS_PLUS_DIR}/Source/FreeRTOS-Plus-Trace/*.c )
-  endif
+  
+  CPPFLAGS              += -DprojENABLE_TRACING=0
   CPPFLAGS              += -DprojCOVERAGE_TEST=0
 endif
 

@@ -6,42 +6,26 @@ add_compile_options( -D_WINDOWS_ )
 
 add_compile_options( -Wall -Wextra -Wpedantic )
 
-if( TRACE_ON_ENTER )
-    add_compile_options( -DTRACE_ON_ENTER=1 )
-else()
-    add_compile_options( -DTRACE_ON_ENTER=0 )
-endif()
-
-if( COVERAGE_TEST )
-    set( COVERAGE_TEST 1 )
-    set( NO_TRACING 1 )
-    add_compile_options( -DprojCOVERAGE_TEST=1 )
-    add_compile_options( -DprojENABLE_TRACING=0 )
-else()
-    if( NO_TRACING )
-        set( NO_TRACING 1 )
-        add_compile_options( -DprojENABLE_TRACING=0 )
-    else()
-        set( NO_TRACING 0 )
-        add_compile_options( -DprojENABLE_TRACING=1 )
-    endif()
-    set( COVERAGE_TEST 0 )
-    add_compile_options( -DprojCOVERAGE_TEST=0 )
-endif()
+set( NO_TRACING 1 )
+set( COVERAGE_TEST 0 )
+add_compile_options( -DprojCOVERAGE_TEST=0 )
+add_compile_options( -DprojENABLE_TRACING=0 )
 
 if( PROFILE )
-    set( CMAKE_BUILD_TYPE "release" )
+    set( CMAKE_BUILD_TYPE "Release" )
 else()
-    set( CMAKE_BUILD_TYPE "debug" )
+    set( CMAKE_BUILD_TYPE "Debug" )
 endif()
 
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3")
 
+set( SANITIZE_ADDRESS 0 )
 if( SANITIZE_ADDRESS )
     add_compile_options( -fsanitize=address -fsanitize=alignment )
 endif()
 
+set( SANITIZE_LEAK 0 )
 if( SANITIZE_LEAK )
     add_compile_options( -fsanitize=leak )
 endif()
@@ -77,6 +61,20 @@ target_compile_options( freertos_kernel
 
 file( GLOB FREERTOS_PLUS_TRACE_SOURCES ${FREERTOS_PLUS_TRACE_PATH}/*.c ${FREERTOS_PLUS_TRACE_PATH}/kernelports/FreeRTOS/*.c )
 
+find_package(SDL2 REQUIRED SDL2)
+
+add_compile_definitions($<$<BOOL:${LV_USE_DRAW_SDL}>:LV_USE_DRAW_SDL=1>)
+add_compile_definitions($<$<BOOL:${LV_USE_LIBPNG}>:LV_USE_LIBPNG=1>)
+add_compile_definitions($<$<BOOL:${LV_USE_LIBJPEG_TURBO}>:LV_USE_LIBJPEG_TURBO=1>)
+add_compile_definitions($<$<BOOL:${LV_USE_FFMPEG}>:LV_USE_FFMPEG=1>)
+
+set( LVGL_PATH "lvgl" )
+add_subdirectory(${LVGL_PATH})
+target_include_directories(lvgl PUBLIC ${PROJECT_SOURCE_DIR} ${SDL2_INCLUDE_DIRS})
+
+set( SIMULATOR_PATH "simulator" )
+file( GLOB SIMULATOR_SOURCES ${SIMULATOR_PATH}/*.c )
+
 add_executable( posix_demo
                 code_coverage_additions.c
                 console.c
@@ -110,6 +108,7 @@ add_executable( posix_demo
                 ${CMAKE_CURRENT_LIST_DIR}/../Common/Minimal/StreamBufferInterrupt.c
                 ${CMAKE_CURRENT_LIST_DIR}/../Common/Minimal/TaskNotify.c
                 ${CMAKE_CURRENT_LIST_DIR}/../Common/Minimal/TimerDemo.c
+                ${SIMULATOR_SOURCES}
               )
 
 target_include_directories( posix_demo
@@ -119,6 +118,7 @@ target_include_directories( posix_demo
         ${FREERTOS_PLUS_TRACE_PATH}/Include
         ${FREERTOS_PLUS_TRACE_PATH}/streamports/File/include
         ${FREERTOS_PLUS_TRACE_PATH}/streamports/File/config
+        ${SIMULATOR_PATH}/include
 )
 
 target_compile_definitions( posix_demo
@@ -127,4 +127,39 @@ target_compile_definitions( posix_demo
         $<IF:$<STREQUAL:${USER_DEMO},FULL_DEMO>,USER_DEMO=1,>
 )
 
-target_link_libraries( posix_demo freertos_kernel freertos_config )
+target_link_libraries( posix_demo freertos_kernel freertos_config lvgl lvgl::examples lvgl::demos lvgl::thorvg ${SDL2_LIBRARIES} m pthread)
+
+if(LV_USE_DRAW_SDL)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+    # Need to install libsdl2-image-dev
+    # `sudo apt install libsdl2-image-dev`
+    # `brew install sdl2_image`
+    find_package(SDL2_image REQUIRED)
+    target_include_directories(lvgl PUBLIC ${SDL2_IMAGE_INCLUDE_DIRS})
+    target_link_libraries(posix_demo ${SDL2_IMAGE_LIBRARIES})
+endif(LV_USE_DRAW_SDL)
+
+if(LV_USE_LIBPNG)
+    find_package(PNG REQUIRED)
+    target_include_directories(lvgl PUBLIC ${PNG_INCLUDE_DIR})
+    target_link_libraries(posix_demo ${PNG_LIBRARY})
+endif(LV_USE_LIBPNG)
+
+if(LV_USE_LIBJPEG_TURBO)
+    # Need to install libjpeg-turbo8-dev
+    # `sudo apt install libjpeg-turbo8-dev`
+    # `brew install libjpeg-turbo`
+    find_package(JPEG REQUIRED)
+    target_include_directories(lvgl PUBLIC ${JPEG_INCLUDE_DIRS})
+    target_link_libraries(posix_demo ${JPEG_LIBRARIES})
+endif(LV_USE_LIBJPEG_TURBO)
+
+if(LV_USE_FFMPEG)
+    target_link_libraries(posix_demo avformat avcodec avutil swscale z)
+endif(LV_USE_FFMPEG)
+
+if(LV_USE_FREETYPE)
+    find_package(Freetype REQUIRED)
+    target_link_libraries(main ${FREETYPE_LIBRARIES})
+    target_include_directories(posix_demo PUBLIC ${FREETYPE_INCLUDE_DIRS})
+endif(LV_USE_FREETYPE)

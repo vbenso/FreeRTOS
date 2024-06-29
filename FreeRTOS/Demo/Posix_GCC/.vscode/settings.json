@@ -13,4 +13,20 @@
         }
     },
     "terminal.integrated.defaultProfile.windows": "MSYS2",
+    "files.associations": {
+        "stdarg.h": "c",
+        "freertos.h": "c",
+        "portable.h": "c",
+        "lv_demo_keypad_encoder.h": "c",
+        "lv_demo_widgets.h": "c",
+        "lv_demos.h": "c",
+        "lv_demo_benchmark.h": "c"
+    },
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/victor/Documents/software/FreeRTOS/FreeRTOS/Demo/Posix_GCC",
+            "binaryPath": "/home/victor/Documents/software/FreeRTOS/FreeRTOS/Demo/Posix_GCC/build/posix_demo",
+            "binaryArgs": []
+        }
+    ],
 }

@@ -39,8 +39,8 @@
 
 #define configUSE_PREEMPTION                       1
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION    0
-#define configUSE_IDLE_HOOK                        1
-#define configUSE_TICK_HOOK                        1
+#define configUSE_IDLE_HOOK                        0
+#define configUSE_TICK_HOOK                        0
 #define configUSE_DAEMON_TASK_STARTUP_HOOK         1
 #define configTICK_RATE_HZ                         ( 1000 )                  /* In this non-real time simulated environment the tick frequency has to be at least a multiple of the Win32 tick frequency, and therefore very slow. */
 #define configMINIMAL_STACK_SIZE                   ( ( unsigned short ) PTHREAD_STACK_MIN ) /* The stack size being passed is equal to the minimum stack size needed by pthread_create(). */
@@ -72,7 +72,7 @@
  * Static only configuration is not possible for this demo as it utilizes
  * dynamic allocation.
  */
-#define configSUPPORT_STATIC_ALLOCATION            1
+#define configSUPPORT_STATIC_ALLOCATION            0
 #define configSUPPORT_DYNAMIC_ALLOCATION           1
 
 #define configRECORD_STACK_HIGH_ADDRESS            1
@@ -174,9 +174,7 @@ extern void vAssertCalled( const char * const pcFileName,
     #define configUSE_MALLOC_FAILED_HOOK    1
 
 /* Include the FreeRTOS+Trace FreeRTOS trace macro definitions. */
-    #if( projENABLE_TRACING == 1 )
-        #include "trcRecorder.h"
-    #endif /* if ( projENABLE_TRACING == 1 ) */
+
 #endif /* if ( projCOVERAGE_TEST == 1 ) */
 
 /* networking definitions */
