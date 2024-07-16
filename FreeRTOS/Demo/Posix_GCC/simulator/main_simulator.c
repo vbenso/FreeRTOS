@@ -174,10 +174,15 @@ static void hal_init(void)
   indev_drv_3.read_cb = lv_x11_get_mousewheel;
 #endif
   /* Set diplay theme */
+
+#if (LV_USE_THEME_MONO != 0)
+  lv_theme_t *th = lv_theme_mono_init(disp, 1, LV_FONT_DEFAULT);
+#elif (LV_USE_THEME_DEFAULT != 0)
   lv_theme_t *th = lv_theme_default_init(disp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED), LV_THEME_DEFAULT_DARK, LV_FONT_DEFAULT);
+#else
+  #error "No theme is enabled. Please enable a theme in lv_conf.h"
+#endif
   lv_disp_set_theme(disp, th);
-
-
 
   /* register input devices */
   lv_indev_t *mouse_indev = lv_indev_drv_register(&indev_drv_1);
@@ -193,11 +198,10 @@ static void hal_init(void)
   lv_indev_set_cursor(mouse_indev, cursor_obj);       /*Connect the image  object to the driver*/
 }
 
-
 // create a task to call the main_simulator function
 void lvgl_handler_task(void *pvParameters)
 {
- 
+
   while (!end_tick)
   {
     lv_tick_inc(5); /*Tell LittelvGL that 5 milliseconds were elapsed*/
@@ -209,7 +213,7 @@ void lvgl_handler_task(void *pvParameters)
 
 int main_simulator(void)
 {
-
+  printf("We are here\n");
   /*Initialize LVGL*/
   lv_init();
 
@@ -239,7 +243,6 @@ int main_simulator(void)
   // lv_demo_benchmark();
 
   xTaskCreate(lvgl_handler_task, "lvgl_handler_task", 4096, NULL, 1, NULL);
-
 }
 
 /**********************
